@@ -41,16 +41,19 @@ docs/
 
 ## Commands
 
-Fill in once the Expo scaffold exists (task 02):
-
 ```bash
 npm install
-npx expo start
-npm test
-npx tsc --noEmit
-supabase db push          # apply migrations to local/linked project
-supabase functions deploy # deploy Edge Functions
+npx expo start             # dev server (press i/a/w for simulator/emulator/web)
+npx expo export --platform web  # bundler smoke test without a simulator
+npm run typecheck          # tsc --noEmit
+npm run lint                # eslint .
+npm run format               # prettier --write .
+npm run format:check         # prettier --check .
+supabase db push           # apply migrations to local/linked project (task 03+)
+supabase functions deploy  # deploy Edge Functions (task 03+)
 ```
+
+**Note on `eslint-config-expo@57.0.0`:** its nested `eslint-import-resolver-typescript` dependency resolves to a version incompatible with its own `eslint-plugin-import` flat-config preset (upstream ecosystem lag right after the SDK 57 release, not a project-specific issue). `package.json` pins it back with `overrides` — if `npm run lint` starts throwing `"invalid interface loaded as resolver"` again after a dependency bump, check whether that override is still needed before troubleshooting further.
 
 ## Working with tasks
 
