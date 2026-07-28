@@ -4,6 +4,8 @@ Implements `docs/tasks/01-data-model-rls.md`. This is the source of truth for `s
 
 Every user-data table is `circle_id`-scoped (directly or via denormalized column, chosen for RLS simplicity over an extra join on hot paths like reactions/comments). No table holding user data lacks an RLS policy — `voice_consents` is the one explicit exception, covered in §6.
 
+> **Correction (found during task 03 implementation, via the actual RLS verification suite — see `supabase/tests/rls_verification.sql`):** the original version of this doc granted the storyteller session `UPDATE` on `stories` and `family_questions`, and described it as able to read `comments`/`reactions`/`family_questions`, without ever granting it a matching `SELECT` policy. In Postgres, `UPDATE ... WHERE ...` needs a row to be visible under *some* applicable `SELECT`-type policy to be a candidate at all — an `UPDATE` policy's own `USING` clause is not sufficient by itself. Without the `SELECT` grant, the storyteller's `UPDATE` silently matched zero rows (no error — just a no-op), and a nested `EXISTS` check against `stories` inside `story_media`'s insert policy failed the same way, since that subquery is evaluated as the calling role and is itself subject to `stories`' RLS. This wasn't caught by review — it only surfaced when the verification suite checked actual row counts / affected rows rather than "did an exception get raised." The missing `SELECT` policies are added below (§ `family_questions`, § `stories`, § `reactions`, § `comments`), scoped to the same boundary already documented in the table above — no change to *what* the storyteller session is meant to access, only to making that access actually work.
+
 ---
 
 ## 0. Roles & auth principals
@@ -29,7 +31,7 @@ A fourth principal is **not a role in `memberships`** — it's a separate auth m
 
 | Can | Cannot |
 |---|---|
-| INSERT `stories` (own `storyteller_id`, own `circle_id`) | Write `stories.transcript` / `.title` / `.chapter` (Edge Function / service role only) |
+| SELECT + INSERT own `stories` (own `storyteller_id`, own `circle_id`) | Write `stories.transcript` / `.title` / `.chapter` (Edge Function / service role only) |
 | UPDATE own `stories.status` (recording → uploading → processing) | DELETE anything |
 | INSERT `story_media` linked to own stories | Access `subscriptions`, `orders`, `voice_consents`, `memberships` |
 | SELECT `prompts` / `prompt_packs` (global, unauthenticated-readable content anyway) | SELECT `circles` table (the app already has circle name/id from pairing; no need to grant a query path) |
@@ -291,6 +293,10 @@ create policy "organizer and member submit questions"
 on family_questions for insert
 with check (circle_role(circle_id) in ('organizer', 'member'));
 
+create policy "storyteller session reads family questions"
+on family_questions for select
+using (is_storyteller_session(circle_id));
+
 create policy "storyteller session updates question status"
 on family_questions for update
 using (is_storyteller_session(circle_id))
@@ -330,6 +336,13 @@ alter table stories enable row level security;
 create policy "circle members read stories"
 on stories for select
 using (is_circle_member(circle_id));
+
+create policy "storyteller session reads own stories"
+on stories for select
+using (
+  is_storyteller_session(circle_id)
+  and storyteller_id = (auth.jwt() ->> 'storyteller_id')::uuid
+);
 
 create policy "storyteller session inserts own stories"
 on stories for insert
@@ -412,6 +425,10 @@ create policy "circle members read reactions"
 on reactions for select
 using (is_circle_member(circle_id));
 
+create policy "storyteller session reads reactions"
+on reactions for select
+using (is_storyteller_session(circle_id));
+
 create policy "circle members react"
 on reactions for insert
 with check (is_circle_member(circle_id) and user_id = auth.uid());
@@ -449,6 +466,10 @@ alter table comments enable row level security;
 create policy "circle members read comments"
 on comments for select
 using (is_circle_member(circle_id));
+
+create policy "storyteller session reads comments"
+on comments for select
+using (is_storyteller_session(circle_id));
 
 create policy "organizer and member write comments"
 on comments for insert
