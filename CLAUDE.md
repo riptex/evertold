@@ -51,6 +51,7 @@ npm run typecheck          # tsc --noEmit
 npm run lint                # eslint .
 npm run format               # prettier --write .
 npm run format:check         # prettier --check .
+npm test                    # jest (jest-expo preset)
 supabase start              # local Supabase stack (needs Docker)
 supabase db reset            # apply supabase/migrations/ + supabase/seed.sql locally
 supabase db push             # apply migrations to a linked project
@@ -61,6 +62,24 @@ supabase functions deploy   # deploy Edge Functions (task 06+)
 **Supabase local dev needs Docker.** If Docker isn't available, `supabase/tests/local_dev_auth_shim.sql` lets you apply the migrations and run `supabase/tests/rls_verification.sql` against plain local Postgres instead — see `supabase/tests/README.md`. `lib/supabase/types.ts` was hand-authored against a Docker-less environment for the same reason (`supabase gen types` shells out to a container for introspection even with `--db-url`, confirmed across two CLI versions) — regenerate it for real the first time this repo is touched somewhere with Docker.
 
 **Note on `eslint-config-expo@57.0.0`:** its nested `eslint-import-resolver-typescript` dependency resolves to a version incompatible with its own `eslint-plugin-import` flat-config preset (upstream ecosystem lag right after the SDK 57 release, not a project-specific issue). `package.json` pins it back with `overrides` — if `npm run lint` starts throwing `"invalid interface loaded as resolver"` again after a dependency bump, check whether that override is still needed before troubleshooting further.
+
+### EAS builds & OTA updates
+
+`eas.json` defines three profiles: `development` (dev client, internal distribution, iOS simulator build), `preview` (internal distribution, `preview` update channel), `production` (auto-incrementing build number, `production` update channel).
+
+```bash
+eas login                                          # one-time, needs an Expo account
+eas build --profile development --platform ios     # or --platform android, or omit for both
+eas build --profile preview --platform all
+eas build --profile production --platform all
+eas update --branch production --message "..."     # OTA update, no new binary needed
+```
+
+**Blocked on external setup — do this yourself, Claude Code can't create accounts:** an Expo account (`eas login` or `EXPO_TOKEN` env var for CI) and, for real device builds rather than simulator-only, Apple/Google developer accounts. Confirmed exact blocker as of this task: `npx eas-cli build --profile development --platform ios --local --non-interactive` fails with *"An Expo user account is required to proceed. Either log in with eas login or set the EXPO_TOKEN environment variable."* `app.json` also needs an `expo.extra.eas.projectId`, which `eas init` sets — also needs login. Once logged in: `eas init`, then the build commands above will work.
+
+### CI
+
+`.github/workflows/ci.yml` runs on every PR and on push to `main`: `typecheck`, `lint`, `format:check`, `test`. It does not run EAS builds — that needs the Expo account above, plus `EXPO_TOKEN` as a GitHub Actions secret. Add an EAS-build CI job only once that account exists.
 
 ## Working with tasks
 
