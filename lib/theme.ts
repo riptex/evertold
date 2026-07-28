@@ -4,20 +4,26 @@
  *
  * Storyteller mode is not a "large text" accessibility toggle — it is the
  * default, always-on presentation for that role (PLAN.md §3.1). Every
- * color pairing listed here meets WCAG AAA contrast (7:1 for normal text,
- * 4.5:1 for large text) against its paired background.
+ * color pairing here is verified against real WCAG 2.1 AAA contrast math
+ * (7:1 normal text, 4.5:1 large text) in lib/contrast.test.ts, not
+ * eyeballed — that test is the source of truth for the actual ratios,
+ * not the comments below.
  */
 
 export const colors = {
   background: "#FAF7F2",
   backgroundElevated: "#FFFFFF",
-  textPrimary: "#1C1B19", // 16.1:1 on background — well past AAA
-  textSecondary: "#4A4744", // 8.9:1 on background — AAA for normal text
-  accent: "#8A4B32", // warm terracotta; 6.2:1 on background — AAA for large text/UI, AA for normal text
+  textPrimary: "#1C1B19", // ~16:1 on background — normal-text AAA, verified
+  textSecondary: "#4A4744", // ~8.6:1 on background — normal-text AAA, verified
+  // warm terracotta. ~6.3:1 on background — large-text/UI AAA, but NOT
+  // normal-text AAA (needs 7:1). Only use for text that qualifies as
+  // "large" (18pt+/24px+, or 14pt+/~19px+ bold) — see Button.tsx's
+  // "primary" variant for how that's enforced, not just assumed.
+  accent: "#8A4B32",
   accentOnDark: "#F3C9A8",
   border: "#D8D2C7",
-  danger: "#8C2F2F", // 6.9:1 on background — AAA for large text
-  success: "#2F6B3A", // 6.1:1 on background — AAA for large text
+  danger: "#8C2F2F", // ~7.7:1 on background — normal-text AAA, verified
+  success: "#2F6B3A", // ~6.0:1 on background — large-text AAA only
 } as const;
 
 export const spacing = {
