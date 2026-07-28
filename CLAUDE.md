@@ -25,6 +25,8 @@ lib/
 hooks/
 supabase/
   migrations/             # SQL migrations (schema + RLS)
+  seed.sql                 # Local dev / test fixture data
+  tests/                    # RLS verification suite (see supabase/tests/README.md)
   functions/               # Edge Functions (transcription pipeline, etc.)
 docs/
   tasks/                  # Per-task specs; a session's prompt is "implement docs/tasks/NN-*.md"
@@ -49,9 +51,14 @@ npm run typecheck          # tsc --noEmit
 npm run lint                # eslint .
 npm run format               # prettier --write .
 npm run format:check         # prettier --check .
-supabase db push           # apply migrations to local/linked project (task 03+)
-supabase functions deploy  # deploy Edge Functions (task 03+)
+supabase start              # local Supabase stack (needs Docker)
+supabase db reset            # apply supabase/migrations/ + supabase/seed.sql locally
+supabase db push             # apply migrations to a linked project
+supabase gen types typescript --local > lib/supabase/types.ts  # regenerate types (needs Docker — see note below)
+supabase functions deploy   # deploy Edge Functions (task 06+)
 ```
+
+**Supabase local dev needs Docker.** If Docker isn't available, `supabase/tests/local_dev_auth_shim.sql` lets you apply the migrations and run `supabase/tests/rls_verification.sql` against plain local Postgres instead — see `supabase/tests/README.md`. `lib/supabase/types.ts` was hand-authored against a Docker-less environment for the same reason (`supabase gen types` shells out to a container for introspection even with `--db-url`, confirmed across two CLI versions) — regenerate it for real the first time this repo is touched somewhere with Docker.
 
 **Note on `eslint-config-expo@57.0.0`:** its nested `eslint-import-resolver-typescript` dependency resolves to a version incompatible with its own `eslint-plugin-import` flat-config preset (upstream ecosystem lag right after the SDK 57 release, not a project-specific issue). `package.json` pins it back with `overrides` — if `npm run lint` starts throwing `"invalid interface loaded as resolver"` again after a dependency bump, check whether that override is still needed before troubleshooting further.
 
