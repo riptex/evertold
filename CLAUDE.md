@@ -17,8 +17,12 @@ app/                    # Expo Router screens
   (organizer)/           # Organizer-role navigator: circles, invites, settings
   (storyteller)/          # Storyteller-role navigator: giant record button, no tabs/settings
   (auth)/
+  dev/                    # Dev-only routes (e.g. component preview) — real routes,
+                           #   not `_`-prefixed (that's excluded from routing entirely,
+                           #   not just production). Guard content with `if (!__DEV__) return null`.
 components/
-  ui/                    # Design system primitives (large-type mode, AAA contrast)
+  ui/                    # Design system primitives — Button/Card/Text/TouchTarget,
+                           #   scale-aware via ScaleContext (see components/ui/index.ts)
 lib/
   supabase/               # Client init, generated types
   offline-queue/           # Local recording queue + background upload/retry
@@ -37,7 +41,7 @@ docs/
 - **Every table is `circle_id`-scoped.** No table holding user data should lack an RLS policy keyed to circle membership. See `docs/tasks/01-data-model-rls.md` for the schema + policy spec.
 - **Storyteller mode is a separate root navigator** — giant record button, prompt card, playback. No tabs, no settings, no navigation chrome. Never share screens between Storyteller mode and Organizer/Member mode.
 - **Offline-first for recording, always.** Record to local file first; never block the record button on network state. Upload is a background concern — see `docs/tasks/10-offline-queue-design.md`.
-- **Accessibility is default-on for Storyteller role**, not a toggle: extra-large type, WCAG AAA contrast, 60pt+ touch targets, full VoiceOver/TalkBack.
+- **Accessibility is default-on for Storyteller role**, not a toggle: extra-large type, WCAG AAA contrast, 60pt+ touch targets, full VoiceOver/TalkBack. Contrast is verified for real in `lib/contrast.test.ts` (actual WCAG luminance math against the theme tokens) — don't eyeball a new color, add a case there.
 - **Audio format:** AAC 64kbps mono for voice recordings. Keep the raw local file until upload is confirmed server-side.
 - Prefer editing existing files; don't introduce new abstractions beyond what the current task needs (see repo-wide engineering norms in the system prompt — minimal footprint, no speculative generality).
 
