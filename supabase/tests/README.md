@@ -40,15 +40,15 @@ GUC that PostgREST sets per-request on a real project, and the
 same test file to behave identically:
 
 ```sh
-createdb evertold_test
-psql evertold_test -v ON_ERROR_STOP=1 -f supabase/tests/local_dev_auth_shim.sql
-psql evertold_test -v ON_ERROR_STOP=1 -f supabase/migrations/0001_core_tables.sql
-psql evertold_test -v ON_ERROR_STOP=1 -f supabase/migrations/0002_helper_functions.sql
-psql evertold_test -v ON_ERROR_STOP=1 -f supabase/migrations/0003_rls_policies.sql
+createdb kindred_voices_test
+psql kindred_voices_test -v ON_ERROR_STOP=1 -f supabase/tests/local_dev_auth_shim.sql
+psql kindred_voices_test -v ON_ERROR_STOP=1 -f supabase/migrations/0001_core_tables.sql
+psql kindred_voices_test -v ON_ERROR_STOP=1 -f supabase/migrations/0002_helper_functions.sql
+psql kindred_voices_test -v ON_ERROR_STOP=1 -f supabase/migrations/0003_rls_policies.sql
 # 0004_storage_buckets.sql needs the real `storage` schema — skip it here.
-psql evertold_test -v ON_ERROR_STOP=1 -f supabase/seed.sql
-psql evertold_test -v ON_ERROR_STOP=1 -f supabase/tests/rls_verification.sql
-dropdb evertold_test
+psql kindred_voices_test -v ON_ERROR_STOP=1 -f supabase/seed.sql
+psql kindred_voices_test -v ON_ERROR_STOP=1 -f supabase/tests/rls_verification.sql
+dropdb kindred_voices_test
 ```
 
 `local_dev_auth_shim.sql` is explicitly **not** a migration — never run it

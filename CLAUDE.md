@@ -1,6 +1,6 @@
-# Evertold
+# Kindred Voices
 
-Voice-first story capture app for elderly loved ones. Full product context: `PLAN.md`. Sprint task specs: `docs/tasks/`.
+Voice-first story capture app for elderly loved ones. Full product context: `PLAN.md`. Sprint task specs: `docs/tasks/`. Formerly "Evertold" — renamed after domain research; see `docs/decisions/naming.md`.
 
 ## Stack
 
