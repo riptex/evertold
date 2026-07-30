@@ -1,4 +1,4 @@
--- Core schema for Evertold MVP.
+-- Core schema for Kindred Voices MVP.
 -- Implements docs/architecture/data-model.md §2. If you find yourself
 -- changing table shape here without updating that doc first, stop —
 -- the doc is the source of truth.

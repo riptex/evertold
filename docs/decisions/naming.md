@@ -5,6 +5,11 @@ registrar Tucows/eNom), so "Evertold" needs replacing before it's used
 anywhere user-facing. This records the actual research done, not just
 the requirement to do it, so it doesn't get re-derived later.
 
+**Decision: "Kindred Voices"** — applied throughout the codebase
+(`package.json`, `app.json`, `PLAN.md`, `CLAUDE.md`, the auth screen).
+Still provisional — real trademark clearance (see "Still needed" below)
+hasn't happened yet, and it's cheap to revisit before anything ships.
+
 ## Method
 
 Domain availability checked via RDAP (`https://rdap.org/domain/<name>`

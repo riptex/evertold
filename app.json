@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Evertold",
-    "slug": "evertold",
+    "name": "Kindred Voices",
+    "slug": "kindred-voices",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "evertold",
+    "scheme": "kindred-voices",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",

@@ -1,12 +1,12 @@
-# Evertold — Product & Build Plan
-*Working title. Alternates: Kindred Voices, Hearthlight, Told.*
+# Kindred Voices — Product & Build Plan
+*Formerly "Evertold" — evertold.com/.app were both already registered; renamed after a domain + trademark-collision check. See `docs/decisions/naming.md` for the research. Still provisional — cheap to revisit before launch.*
 A mobile app for capturing the voices, stories, and memories of elderly loved ones — built to be handed to Claude Code for implementation.
 
 ---
 
 ## 1. Vision & Positioning
 
-**One-liner:** Evertold helps families capture the voice and life stories of aging loved ones before it's too late — and keeps those stories alive for generations.
+**One-liner:** Kindred Voices helps families capture the voice and life stories of aging loved ones before it's too late — and keeps those stories alive for generations.
 
 **Emotional core:** urgency without morbidity. Marketing speaks of "while the stories are still being told," never of dying. The product must feel like a warm family ritual, not end-of-life paperwork.
 

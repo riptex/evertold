@@ -12,7 +12,7 @@ import { colors, spacing } from "@/lib/theme";
 export default function SignIn() {
   return (
     <View style={styles.container}>
-      <Heading>Evertold</Heading>
+      <Heading>Kindred Voices</Heading>
       <Body color="textSecondary">Sign-in coming soon</Body>
 
       <Link href="/(organizer)" style={styles.link}>
